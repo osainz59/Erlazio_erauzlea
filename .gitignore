@@ -1,4 +1,5 @@
 .ipynb*
+*.ipynb
 irudiak/
 modeloak/
 *.ee
