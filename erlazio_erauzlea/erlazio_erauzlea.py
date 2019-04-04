@@ -91,7 +91,7 @@ class ErlazioErauzlea:
 
         return result
 
-    def erlazioak_erauzi(self, testua):
+    def erlazioak_erauzi(self, testua, konfiantza_faktorea=0.0):
         if not self._egokitua:
             raise Exception('Erlazio-erauzlea ez dago egokitua.')
 
@@ -126,6 +126,11 @@ class ErlazioErauzlea:
 
         # Sailkapena egin
         y = self.clf.predict(X)
+        df = self.clf.decision_function(X)
+
+        # Konfiantza faktorera iristen ez direnak NIL bezela markatu
+        y[np.max(df, axis=1) < konfiantza_faktorea] = 4
+
         y = list(map(lambda x: self.klase_izenak[x], y))
 
         datuak['rel'] = y
