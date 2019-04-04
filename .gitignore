@@ -1,0 +1,8 @@
+.ipynb*
+irudiak/
+modeloak/
+*.ee
+*.txt
+.idea*
+*.pyc
+script_deiak/
