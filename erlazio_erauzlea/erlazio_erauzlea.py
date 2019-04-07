@@ -91,7 +91,26 @@ class ErlazioErauzlea:
 
         return result
 
-    def erlazioak_erauzi(self, testua, konfiantza_faktorea=0.0):
+    def __erlazioen_noranzkoa_zuzendu(self, datuak):
+
+        def konparatu_tripletak(row, datuak):
+            bestea = datuak.query("arg1 == '{}' and arg2 == '{}' and rel == '{}' and docid == '{}'".format(row.arg2, row.arg1, row.rel, row.docid)).reset_index()
+            if len(bestea) > 0:
+                bestea = bestea.loc[0]
+            else:
+                return row
+
+            if bestea.konfiantza > row.konfiantza and not bestea.rel == 'Nil':
+                row.rel = 'Nil'
+                row.konfiantza = -np.inf
+
+            return row
+
+        datuak = datuak.apply(konparatu_tripletak, axis=1, args=(datuak,))
+
+        return datuak
+
+    def erlazioak_erauzi(self, testua, konfiantza_faktorea=0.0, noranzkoa_zuzendu=True):
         if not self._egokitua:
             raise Exception('Erlazio-erauzlea ez dago egokitua.')
 
@@ -130,10 +149,15 @@ class ErlazioErauzlea:
 
         # Konfiantza faktorera iristen ez direnak NIL bezela markatu
         y[np.max(df, axis=1) < konfiantza_faktorea] = 4
+        df[np.max(df, axis=1) < konfiantza_faktorea] = -np.inf
 
         y = list(map(lambda x: self.klase_izenak[x], y))
 
         datuak['rel'] = y
+        datuak['konfiantza'] = np.max(df, axis=1)
+
+        if noranzkoa_zuzendu:
+            datuak = self.__erlazioen_noranzkoa_zuzendu(datuak)
 
         tokens.reset_index(inplace=True)
         datuak = datuak.merge(tokens, left_on='docid', right_on='index')
