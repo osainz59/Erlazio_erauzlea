@@ -3,6 +3,7 @@ from .corpus import testu_prozesaketa
 
 from sklearn.svm import LinearSVC
 from itertools import permutations
+from copy import deepcopy
 
 import pickle as pk
 import numpy as np
@@ -177,7 +178,11 @@ class ErlazioErauzlea:
 
         berria.erauzlea = zaharra.erauzlea
         berria._C = zaharra._C
-        berria.ebaluatzailea = zaharra.ebaluatzailea
+
+        if hasattr(zaharra, 'ebaluatzailea'):
+            berria.ebaluatzailea = zaharra.ebaluatzailea
+        else:
+            berria.ebaluatzailea = None
         berria.clf = zaharra.clf
 
         berria._egokitua = True
@@ -186,10 +191,22 @@ class ErlazioErauzlea:
 
 
     @staticmethod
-    def kargatu(path):
+    def kargatu(path, ebaluaketa_path=None):
         with open(path, 'rb') as fitx:
-            return pk.load(fitx)
+            modeloa = pk.load(fitx)
 
-    def gorde(self, path):
+        if ebaluaketa_path:
+            modeloa.ebaluatzailea = Ebaluaketa.load(ebaluaketa_path)
+
+        return modeloa
+
+
+
+    def gorde(self, path, ebaluaketa_path=None):
+        if ebaluaketa_path:
+            self.ebaluatzailea.save(ebaluaketa_path)
+
         with open(path, 'wb') as fitx:
-            pk.dump(self, fitx)
+            modeloa = deepcopy(self)
+            del modeloa.ebaluatzailea
+            pk.dump(modeloa, fitx)
