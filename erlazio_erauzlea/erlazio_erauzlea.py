@@ -208,5 +208,6 @@ class ErlazioErauzlea:
 
         with open(path, 'wb') as fitx:
             modeloa = deepcopy(self)
-            del modeloa.ebaluatzailea
+            if hasattr(modeloa, 'ebaluatzailea'):
+                del modeloa.ebaluatzailea
             pk.dump(modeloa, fitx)
