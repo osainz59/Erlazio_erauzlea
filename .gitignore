@@ -3,6 +3,7 @@
 irudiak/
 modeloak/
 datasetak/
+OpenNRE/*.*
 *.ee
 *.txt
 .idea*

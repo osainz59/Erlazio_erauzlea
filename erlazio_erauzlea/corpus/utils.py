@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import numpy as np
 
 
 def kalkulatu_erlazioen_adibide_proportzioa(dataseta):
@@ -47,22 +48,34 @@ def split_dataset(dataset):
     return train_set, dev_set, test_set
 
 
-def __to_dict(arg):
-    return {'word': arg}
+def __to_dict(argumentua, id2term):
+    return {'word': argumentua, 'id': id2term[argumentua]}
 
 
-def to_json(dataset, tokens):
+def dataset_to_json(dataset, tokens, id2term):
 
     new_df = pd.DataFrame()
 
     tokens = tokens.reset_index()
     df = dataset.merge(tokens, left_on='docid', right_on='index')
 
-    new_df['head'] = df['arg1'].apply(__to_dict)
-    new_df['tail'] = df['arg2'].apply(__to_dict)
+    new_df['head'] = df['arg1'].apply(__to_dict, args=(id2term,))
+    new_df['tail'] = df['arg2'].apply(__to_dict, args=(id2term,))
     new_df['sentence'] = df['tokens']
     new_df['relation'] = df['rel']
 
     df_dict = new_df.to_dict(orient='records')
 
     return json.dumps(df_dict, indent='\t')
+
+
+def glove_to_list_of_dicts(glove_path):
+    word_list = []
+    with open(glove_path, 'rt') as fitx:
+        for line in fitx:
+            splitted_line = line.split()
+            word = splitted_line[0]
+            embedding = [float(val) for val in splitted_line[1:]]
+            word_list.append({'word' : word, 'vec' : embedding})
+
+    return word_list
