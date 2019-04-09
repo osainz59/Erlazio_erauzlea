@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 
 
 def kalkulatu_erlazioen_adibide_proportzioa(dataseta):
@@ -44,3 +45,24 @@ def split_dataset(dataset):
     test_set = pd.concat(dataset_folds[9:], axis=0).reset_index()[['arg1', 'arg2', 'docid', 'rel']]
 
     return train_set, dev_set, test_set
+
+
+def __to_dict(arg):
+    return {'word': arg}
+
+
+def to_json(dataset, tokens):
+
+    new_df = pd.DataFrame()
+
+    tokens = tokens.reset_index()
+    df = dataset.merge(tokens, left_on='docid', right_on='index')
+
+    new_df['head'] = df['arg1'].apply(__to_dict)
+    new_df['tail'] = df['arg2'].apply(__to_dict)
+    new_df['sentence'] = df['tokens']
+    new_df['relation'] = df['rel']
+
+    df_dict = new_df.to_dict(orient='records')
+
+    return json.dumps(df_dict, indent='\t')

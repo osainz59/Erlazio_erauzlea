@@ -2,6 +2,7 @@
 *.ipynb
 irudiak/
 modeloak/
+datasetak/
 *.ee
 *.txt
 .idea*
