@@ -8,7 +8,7 @@ from erlazio_erauzlea.sailkatzailea.ezaugarriak import zhou, mintz
 class EzaugarriErauzlea:
 
     def __init__(self, izen_lexikografikoak=None,
-                 ezaugarri_hiztegia=None, argumentuen_arteko_distantzia=10,
+                 ezaugarri_hiztegia=None, argumentuen_arteko_distantzia=20,
                  ezaugarrien_agerpen_atalasea=0,
                  ezaugarri_mota = 'zhou'):
 
