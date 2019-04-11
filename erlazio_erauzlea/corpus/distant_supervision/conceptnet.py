@@ -119,7 +119,7 @@ class ConceptNet:
 
         erlazioak['Hitz_Kop'] = pd.Series([lortu_hitzak(self._conceptnet.query("rel == '" + erlazioa + "'"))
                                            for erlazioa in erlazio_izenak])
-        erlazioak['Hitz_Kop%'] = erlazioak['Hitz_Kop'] / self._hiztegia
+        erlazioak['Hitz_Kop%'] = erlazioak['Hitz_Kop'] / lortu_hitzak(self._conceptnet)
         erlazioak.sort_values('Kopurua', inplace=True, ascending=False)
 
         hitzak = pd.DataFrame()
