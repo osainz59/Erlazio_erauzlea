@@ -122,14 +122,14 @@ class ConceptNet:
         erlazioak['Hitz_Kop%'] = erlazioak['Hitz_Kop'] / lortu_hitzak(self._conceptnet)
         erlazioak.sort_values('Kopurua', inplace=True, ascending=False)
 
-        hitzak = pd.DataFrame()
-        hitzak['Terminoa'] = pd.Series(pd.unique(self._conceptnet[["arg1", "arg2"]].values.ravel('K')))
-        for erlazioa in erlazioak.Erlazioa:
-            hitzak[erlazioa] = pd.Series([self._conceptnet.query(
-                'rel == "' + erlazioa + '" and ( arg1 == "' + hitza + '" or arg2 == "' + hitza + '")').rel.count()
-                                          for hitza in hitzak.Terminoa])
+        #hitzak = pd.DataFrame()
+        #hitzak['Terminoa'] = pd.Series(pd.unique(self._conceptnet[["arg1", "arg2"]].values.ravel('K')))
+        #for erlazioa in erlazioak.Erlazioa:
+        #    hitzak[erlazioa] = pd.Series([self._conceptnet.query(
+        #        'rel == "' + erlazioa + '" and ( arg1 == "' + hitza + '" or arg2 == "' + hitza + '")').rel.count()
+        #                                  for hitza in hitzak.Terminoa])
 
-        hitzak['Total'] = hitzak.sum(axis=1)
-        hitzak.sort_values('Total', inplace=True, ascending=False)
+        #hitzak['Total'] = hitzak.sum(axis=1)
+        #hitzak.sort_values('Total', inplace=True, ascending=False)
 
-        return erlazioak, hitzak
+        return erlazioak#, hitzak
