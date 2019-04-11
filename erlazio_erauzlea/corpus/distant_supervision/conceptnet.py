@@ -108,8 +108,8 @@ class ConceptNet:
                                           for erlazioa in erlazio_izenak])
         rel_kop = self._conceptnet.rel.count()
         erlazioak['Kopurua%'] = erlazioak['Kopurua'] / rel_kop
-        erlazioak['Pisu_Handiena'] = pd.Series([self._conceptnet.query("rel == '" + erlazioa + "'").weight.max()
-                                                for erlazioa in erlazio_izenak])
+        #erlazioak['Pisu_Handiena'] = pd.Series([self._conceptnet.query("rel == '" + erlazioa + "'").weight.max()
+        #                                        for erlazioa in erlazio_izenak])
 
         def lortu_hitzak(erlazio_df):
             hitzak1 = erlazio_df.arg1.values
