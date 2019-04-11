@@ -13,7 +13,7 @@ class ConceptNet:
 
     def __init__(self, fitxategia):
         self._fitxategia = fitxategia
-        self._conceptnet = pd.DataFrame()
+        self._conceptnet = None
         self._erlazioak = []
         self._hiztegia = None
 
@@ -31,7 +31,25 @@ class ConceptNet:
 
         return result
 
+    def formatua_egokitu(self, BUFFER_SIZE=10000, verbose=False):
+        df_result = pd.DataFrame()
+
+        # Kargatu ConceptNet chunk-a
+        for i, chunk in enumerate(
+                pd.read_csv(self._fitxategia, sep="\t", header=None, chunksize=BUFFER_SIZE, encoding='utf-8')):
+            if verbose:
+                print('Working on: ' + str(i * BUFFER_SIZE) + ' - ' + str((i + 1) * BUFFER_SIZE) + ' rows.')
+            processed = self.__prozesatu_chunka(chunk)
+            df_result = df_result.append(processed, ignore_index=True)
+
+        df_result.dropna(inplace=True)
+        self._conceptnet = df_result
+
+        return self._conceptnet
+
+
     def erauzi_domeinuko_tripletak(self, hiztegia, BUFFER_SIZE=10000, eragiketa='and', verbose=False):
+        """
         df_result = pd.DataFrame()
         hiztegia = np.load(hiztegia)
 
@@ -49,6 +67,25 @@ class ConceptNet:
 
         df_result.dropna(inplace=True)
         self._conceptnet = df_result
+
+
+        :param hiztegia:
+        :param BUFFER_SIZE:
+        :param eragiketa:
+        :param verbose:
+        :return:
+        """
+        hiztegia = np.load(hiztegia)
+
+        if self._conceptnet is None:
+            self.formatua_egokitu(BUFFER_SIZE, verbose)
+
+        if eragiketa is 'and':
+            df_result = self._conceptnet[self._conceptnet.arg1.isin(hiztegia) & self._conceptnet.arg2.isin(hiztegia)]
+        else:
+            df_result = self._conceptnet[self._conceptnet.arg1.isin(hiztegia) | self._conceptnet.arg2.isin(hiztegia)]
+
+        df_result.dropna(inplace=True)
         self._hiztegia = hiztegia
 
         return df_result
