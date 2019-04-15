@@ -88,6 +88,8 @@ class ConceptNet:
         df_result.dropna(inplace=True)
         self._hiztegia = hiztegia
 
+        self._conceptnet = df_result
+
         return df_result
 
     def erauzi_erlazioak(self, erlazioak):
