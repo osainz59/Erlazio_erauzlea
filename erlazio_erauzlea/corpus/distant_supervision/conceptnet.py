@@ -19,9 +19,9 @@ class ConceptNet:
 
     @staticmethod
     def __prozesatu_chunka(chunk):
-        chunk[1] = chunk[1].apply(lambda row: row.split('/')[2])
-        chunk[2] = chunk[2].apply(lambda row: row.split('/')[3])
-        chunk[3] = chunk[3].apply(lambda row: row.split('/')[3])
+        chunk[1] = chunk[1].apply(lambda row: row.split('/')[2].replace('_', ' '))
+        chunk[2] = chunk[2].apply(lambda row: row.split('/')[3].replace('_', ' '))
+        chunk[3] = chunk[3].apply(lambda row: row.split('/')[3].replace('_', ' '))
         # chunk[4] = chunk[4].apply(lambda row: get_weight(row))
         chunk.drop(columns=[0], inplace=True)
         # result = pd.DataFrame(columns=['arg1', 'rel', 'arg2', 'weight'])
