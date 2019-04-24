@@ -4,7 +4,7 @@ import pandas as pd
 from erlazio_erauzlea.corpus.distant_supervision import Solr
 
 
-def adibideak_erauzi(url, conceptnet, output, verbose):
+def adibideak_erauzi(url, conceptnet, nil_adibide_kopurua, output, verbose):
     # Sortu solr instantzia
     solr = Solr(url)
 
@@ -13,7 +13,7 @@ def adibideak_erauzi(url, conceptnet, output, verbose):
     corpusa = solr.erauzi_corpusa(conceptnet)
 
     # Erauzi NIL adibideak
-    nil_adibideak = solr.sortu_nil_adibideak(conceptnet, verbose=verbose)
+    nil_adibideak = solr.sortu_nil_adibideak(conceptnet, n=nil_adibide_kopurua, verbose=verbose)
 
     corpusa.append(nil_adibideak, ignore_index=True)
 
@@ -29,6 +29,8 @@ def main():
                         help="Solr zerbitzariaren helbidea.")
     parser.add_argument('-cn', type=str, dest='conceptnet',
                         help="Conceptnet-eko tripleta multzoa.")
+    parser.add_argument('-nil', type=int, dest='nil_adibide_kopurua',
+                        help="NIL adibide kopurua.", default=0)
     parser.add_argument('-o', type=str, dest='output',
                         help="Output fitxategia.")
     parser.add_argument('-verbose', action='store_true', default=False)
