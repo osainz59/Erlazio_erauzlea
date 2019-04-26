@@ -51,6 +51,13 @@ def agerpen_gutxiko_tripletak_ezabatu(df, atalasea=10):
     return df[~df[['arg1', 'arg2']].apply(tuple, 1).isin(iragazteko_tripletak)]
 
 
+def agerpen_handiko_tripletak_ezabatu(df, atalasea=75):
+    iragazteko_tripletak = df.groupby(['arg1', 'arg2']).count().docid
+    iragazteko_tripletak = list(iragazteko_tripletak[iragazteko_tripletak > atalasea].keys())
+
+    return df[~df[['arg1', 'arg2']].apply(tuple, 1).isin(iragazteko_tripletak)]
+
+
 def multi_instance_adibideak_iragazi(df):
     lag = df[['arg1', 'arg2', 'docid']]
     indizeak = lag.drop_duplicates().index

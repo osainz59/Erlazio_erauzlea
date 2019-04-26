@@ -30,7 +30,7 @@ def zarata_iragazi(input, output, pmi_atalasea, verbose):
 
     # Kopuruan oinarritutako iragazketa
     print("Kopuruan oinarritutako iragazketak...", end="", flush=True)
-    dataseta = iragazketak.agerpen_gutxiko_tripletak_ezabatu(dataseta)
+    dataseta = iragazketak.agerpen_handiko_tripletak_ezabatu(dataseta)
     print('Okey!')
 
     # Ezabatu multi-instance adibideak
