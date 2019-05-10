@@ -87,7 +87,7 @@ class Solr:
 
         return training
 
-    def sortu_nil_adibideak(self, conceptnet, n=800000, verbose=False):
+    def sortu_nil_adibideak(self, conceptnet, n=10000, verbose=False):
         args = conceptnet.arg1.append(conceptnet.arg2).unique()
         # M = len(args)
 

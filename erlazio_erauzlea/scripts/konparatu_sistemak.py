@@ -7,6 +7,7 @@ from itertools import product
 from collections import OrderedDict
 
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 from multiprocessing import Pool
@@ -104,6 +105,10 @@ def konparatu_sistemak(tokens, lemmas, pos, il, train, dev, atalasea, cores=NUMB
     # Ebaluatu sailkatzaileak
     precision_recall_kurba_anizkoitza(modeloak)
     plt.savefig('irudiak/sistemen_arteko_precision_recall_kurba.png')
+    print("Ebaluaketa:")
+    for izena, modeloa in modeloak.items():
+        pre, rec, f = modeloa.precision_recall_fscore()
+        print("{} -- > Precision: {}, Recall: {}, F-Score: {}".format(izena, pre, rec, f))
 
 
 def main():

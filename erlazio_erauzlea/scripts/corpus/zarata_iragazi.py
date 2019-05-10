@@ -5,7 +5,7 @@ from erlazio_erauzlea.corpus import iragazketak
 from erlazio_erauzlea.corpus.utils import kalkulatu_erlazioen_adibide_proportzioa
 
 
-def zarata_iragazi(input, output, pmi_atalasea, verbose):
+def zarata_iragazi(input, output, pmi_atalasea, kop_hand, kop_txik, verbose):
     # Irakurri dataseta
     dataseta = pd.read_csv(input, sep='\t')
 
@@ -29,9 +29,15 @@ def zarata_iragazi(input, output, pmi_atalasea, verbose):
     print('Okey!')
 
     # Kopuruan oinarritutako iragazketa
-    print("Kopuruan oinarritutako iragazketak...", end="", flush=True)
-    dataseta = iragazketak.agerpen_handiko_tripletak_ezabatu(dataseta)
-    print('Okey!')
+    if kop_hand:
+        print("Kopuruan oinarritutako iragazketak...", end="", flush=True)
+        dataseta = iragazketak.agerpen_handiko_tripletak_ezabatu(dataseta)
+        print('Okey!')
+
+    if kop_txik:
+        print("Kopuruan oinarritutako iragazketak...", end="", flush=True)
+        dataseta = iragazketak.agerpen_gutxiko_tripletak_ezabatu(dataseta)
+        print('Okey!')
 
     # Ezabatu multi-instance adibideak
     #print("Multi-instance-ak garbitu...", end="", flush=True)
@@ -58,6 +64,8 @@ def main():
                         help="Output fitxategia.")
     parser.add_argument('-pmi', type=float, dest='pmi_atalasea',
                         help="PMI atalase desberdinak.")
+    parser.add_argument('-kop_hand', action='store_true', default=False)
+    parser.add_argument('-kop_txik', action='store_true', default=False)
     parser.add_argument('-verbose', action='store_true', default=False)
 
     args = parser.parse_args()

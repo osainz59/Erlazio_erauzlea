@@ -9,3 +9,4 @@ OpenNRE/*.*
 .idea*
 *.pyc
 script_deiak/
+lag/
