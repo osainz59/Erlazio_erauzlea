@@ -1,10 +1,13 @@
 import warnings
+import os
 
 warnings.filterwarnings('ignore')
 
 import argparse
 from itertools import product
 from collections import OrderedDict
+
+from tqdm import tqdm
 
 import pandas as pd
 import numpy as np
@@ -27,7 +30,7 @@ def lortu_ebaluaketa(konf, X_train, y_train, X_dev, y_dev):
     izena = konf["mota"]
 
     if konf["laginketa"]:
-        izena += '-sampling'
+        izena += '-lagin'
         print("{}-Trainset-a orekatu adibide berriak sortuz sintetikoki...".format(konf))
         sampler = Sampling()
         X_train_, y_train_ = sampler.adibide_sintetikoak_sortu(X_train[konf["mota"]], y_train[konf["mota"]])
@@ -54,7 +57,7 @@ def lortu_ebaluaketa(konf, X_train, y_train, X_dev, y_dev):
     return izena, result
 
 
-def konparatu_sistemak(tokens, lemmas, pos, il, train, dev, atalasea, cores=NUMBER_OF_PROCESS, verbose=False):
+def lortu_modeloak(tokens, lemmas, pos, il, train, dev, atalasea, cores=NUMBER_OF_PROCESS, verbose=False):
     print("Corpusa kargatu...", end="", flush=True)
     tokens = pd.read_csv(tokens, sep='\t', compression='bz2', index_col=0, encoding='latin-1')
     lemmas = pd.read_csv(lemmas, sep='\t', compression='bz2', index_col=0, encoding='latin-1')
@@ -102,6 +105,18 @@ def konparatu_sistemak(tokens, lemmas, pos, il, train, dev, atalasea, cores=NUMB
 
     modeloak = {izena: modeloa for izena, modeloa in result}
 
+    return modeloak
+
+
+def konparatu_sistemak(precomputed, *args, **kwargs):
+
+    if not precomputed:
+        modeloak = lortu_modeloak(*args, **kwargs)
+    else:
+        modeloak = dict()
+        for modeloa in tqdm(os.listdir('modeloak/')):
+            modeloak[modeloa[:-4]] = Ebaluaketa.load(f"modeloak/{modeloa}")
+
     # Ebaluatu sailkatzaileak
     precision_recall_kurba_anizkoitza(modeloak)
     plt.savefig('irudiak/sistemen_arteko_precision_recall_kurba.png')
@@ -129,26 +144,29 @@ def main():
     parser.add_argument('-ezaugarri_atalasea', type=int, dest='atalasea',
                         help="Ezaugarrien agerpen kopuru minimoa.", default=0)
     parser.add_argument('-verbose', action='store_true', default=False)
+    parser.add_argument('-precomputed', action='store_true', default=False)
 
     args = parser.parse_args()
-    # Argumentuak ondo jaso direla ziurtatu
-    if args.tokens is None:
-        raise IOError('Token fitxategia beharrezko argumentu bat da.')
 
-    if args.lemmas is None:
-        raise IOError('Lemma fitxategia beharrezko argumentu bat da.')
+    if not args.precomputed:
+        # Argumentuak ondo jaso direla ziurtatu
+        if args.tokens is None:
+            raise IOError('Token fitxategia beharrezko argumentu bat da.')
 
-    if args.pos is None:
-        raise IOError('POS fitxategia beharrezko argumentu bat da mintz ezaugarrientzako.')
+        if args.lemmas is None:
+            raise IOError('Lemma fitxategia beharrezko argumentu bat da.')
 
-    if args.il is None:
-        raise IOError('Izen Lexikografikoko fitxategia beharrezko argumentu bat da mintz ezaugarrientzako.')
+        if args.pos is None:
+            raise IOError('POS fitxategia beharrezko argumentu bat da mintz ezaugarrientzako.')
 
-    if args.train is None:
-        raise IOError('Train fitxategia beharrezko argumentu bat da.')
+        if args.il is None:
+            raise IOError('Izen Lexikografikoko fitxategia beharrezko argumentu bat da mintz ezaugarrientzako.')
 
-    if args.dev is None:
-        raise IOError('Dev fitxategia beharrezko argumentu bat da.')
+        if args.train is None:
+            raise IOError('Train fitxategia beharrezko argumentu bat da.')
+
+        if args.dev is None:
+            raise IOError('Dev fitxategia beharrezko argumentu bat da.')
 
     # Deitu funtzioari
     konparatu_sistemak(**vars(args))

@@ -16,11 +16,11 @@ from sklearn.multiclass import OneVsRestClassifier
 
 
 def precision_recall_kurba_anizkoitza(modeloak):
-    #colors = itertools.cycle(['navy', 'turquoise', 'darkorange', 'cornflowerblue', 'teal'])
+    # colors = itertools.cycle(['navy', 'turquoise', 'darkorange', 'cornflowerblue', 'teal'])
     colors = itertools.cycle(mcolors.TABLEAU_COLORS)
 
-
-    plt.figure(figsize=(7, 8))
+    #plt.figure(figsize=(12, 14))
+    plt.figure(figsize=(10, 7))
     f_scores = np.linspace(0.2, 0.8, num=4)
     lines = []
     labels = []
@@ -28,27 +28,30 @@ def precision_recall_kurba_anizkoitza(modeloak):
         x = np.linspace(0.01, 1)
         y = f_score * x / (2 * x - f_score)
         l, = plt.plot(x[y >= 0], y[y >= 0], color='gray', alpha=0.2)
-        plt.annotate('f1={0:0.1f}'.format(f_score), xy=(0.9, y[45] + 0.02))
+        plt.annotate('f1={0:0.1f}'.format(f_score), xy=(0.9, y[45] + 0.02), fontsize=10)
 
     lines.append(l)
-    labels.append('iso-f1 curves')
+    labels.append('iso-f1 kurbak')
 
-    for modeloa, color in zip(sorted(modeloak.items(), key=lambda x:x[0]), colors):
+    for modeloa, color in zip(sorted(modeloak.items(), key=lambda x: x[0]), colors):
         izena, modeloa = modeloa
         precision, recall, average_precision = modeloa.precision_recall_kurba(irudikatu=False)
         l, = plt.plot(recall, precision, color=color, lw=2)
         lines.append(l)
-        labels.append('Precision-recall for class {0} (area = {1:0.2f})'
+        labels.append('{0} (azalera = {1:0.2f})'
                       ''.format(izena, average_precision))
 
     fig = plt.gcf()
-    fig.subplots_adjust(bottom=0.25)
+    #fig.subplots_adjust(bottom=0.25)
+    fig.subplots_adjust(right=0.7)
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.title('Doitasun/estaldura kurba')
-    plt.legend(lines, labels, loc=(0, -.38), prop=dict(size=14))
+    plt.xlabel('Estaldura', fontsize=14)
+    plt.ylabel('Doitasuna', fontsize=14)
+    plt.title('Doitasun/estaldura kurba', fontsize=16)
+    #plt.legend(lines, labels, loc=(0, -.38), prop=dict(size=14))
+    plt.legend(lines, labels, bbox_to_anchor=(1.04, .5), loc="lower left", borderaxespad=0)
+    plt.tight_layout(rect=[0, 0, 1, 1])
 
 
 class Ebaluaketa:
