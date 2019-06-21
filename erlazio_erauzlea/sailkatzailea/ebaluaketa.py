@@ -16,9 +16,8 @@ from sklearn.multiclass import OneVsRestClassifier
 
 
 def precision_recall_kurba_anizkoitza(modeloak):
-    #colors = itertools.cycle(['navy', 'turquoise', 'darkorange', 'cornflowerblue', 'teal'])
+    # colors = itertools.cycle(['navy', 'turquoise', 'darkorange', 'cornflowerblue', 'teal'])
     colors = itertools.cycle(mcolors.TABLEAU_COLORS)
-
 
     plt.figure(figsize=(7, 8))
     f_scores = np.linspace(0.2, 0.8, num=4)
@@ -33,7 +32,7 @@ def precision_recall_kurba_anizkoitza(modeloak):
     lines.append(l)
     labels.append('iso-f1 curves')
 
-    for modeloa, color in zip(sorted(modeloak.items(), key=lambda x:x[0]), colors):
+    for modeloa, color in zip(sorted(modeloak.items(), key=lambda x: x[0]), colors):
         izena, modeloa = modeloa
         precision, recall, average_precision = modeloa.precision_recall_kurba(irudikatu=False)
         l, = plt.plot(recall, precision, color=color, lw=2)
@@ -101,7 +100,7 @@ class Ebaluaketa:
         plt.figure()
         plot_confusion_matrix(cm, classes=self._class_names, normalize=normalizatua, title=izenburua)
 
-    def precision_recall_kurba(self, irudikatu=True):
+    def precision_recall_kurba(self, average='micro', irudikatu=True):
         # Aurreprozesatu datuak
         y_train = label_binarize(self._y_train, classes=list(range(len(self._class_names))))
         y_test = label_binarize(self._y_test, classes=list(range(len(self._class_names))))
@@ -124,7 +123,7 @@ class Ebaluaketa:
         precision["micro"], recall["micro"], _ = precision_recall_curve(y_test.ravel(),
                                                                         y_score.ravel())
         average_precision["micro"] = average_precision_score(y_test, y_score,
-                                                             average="micro")
+                                                             average=average)
         print('Average precision score, micro-averaged over all classes: {0:0.2f}'
               .format(average_precision["micro"]))
 
@@ -152,7 +151,7 @@ class Ebaluaketa:
                 l, = plt.plot(recall[i], precision[i], color=color, lw=2)
                 lines.append(l)
                 labels.append('Precision-recall for class {0} (area = {1:0.2f})'
-                          ''.format(self._class_names[i], average_precision[i]))
+                              ''.format(self._class_names[i], average_precision[i]))
 
             fig = plt.gcf()
             fig.subplots_adjust(bottom=0.25)
@@ -165,16 +164,15 @@ class Ebaluaketa:
 
         return precision["micro"], recall["micro"], average_precision["micro"]
 
-
-    def precision_recall_fscore(self):
+    def precision_recall_fscore(self, average='macro'):
         clf = copy(self._modeloa)
         clf.fit(self._X_train, self._y_train)
         pre = clf.predict(self._X_test)
 
-        precision = precision_score(self._y_test, pre, average='macro')
-        recall = recall_score(self._y_test, pre, average='macro')
-        fscore = f1_score(self._y_test, pre, average='macro')
-        #precision, recall, fscore, _ = precision_recall_fscore_support(self._y_test, pre, average='macro')
+        precision = precision_score(self._y_test, pre, average=average)
+        recall = recall_score(self._y_test, pre, average=average)
+        fscore = f1_score(self._y_test, pre, average=average)
+        # precision, recall, fscore, _ = precision_recall_fscore_support(self._y_test, pre, average='macro')
 
         return precision, recall, fscore
 

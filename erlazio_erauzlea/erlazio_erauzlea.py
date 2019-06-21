@@ -23,21 +23,29 @@ class ErlazioErauzlea:
             'Nil'
         ]
 
+        # Hasieratu aldagaiak
+        self.izen_lexikografikoak = None
+        self.argumentuen_arteko_distantzia = 20
+        self.ezaugarri_atalasea = 0
+
+        self.erauzlea = None
+        self._C = 1.0
+
+        self.clf = None
+        self.ebaluatzailea = None
+
     def egokitu(self, train_set, dev_set, tokens, lemmas,
                 pos=None, izen_lexikografikoak=None,
-                mota='zhou', laginketa=True, optimizatu=True,
-                argumentuen_arteko_distantzia=10, ezaugarri_atalasea=0,
-                optimizazio_iterazio_kop=25, verbose=False):
+                laginketa=True, optimizatu=True,
+                *args, **kwargs):
 
         # Gorde beharrezko informazioa klaseko aldagai bezela
         self.izen_lexikografikoak = izen_lexikografikoak
-        self.argumentuen_arteko_distantzia = argumentuen_arteko_distantzia
-        self.ezaugarri_atalasea = ezaugarri_atalasea
+        self.argumentuen_arteko_distantzia = kwargs.get('argumentuen_arteko_distantzia', self.argumentuen_arteko_distantzia)
+        self.ezaugarri_atalasea = kwargs.get('ezaugarri_atalasea', self.ezaugarri_atalasea)
 
         # Ezaugarri erauzlea definitu
-        self.erauzlea = EzaugarriErauzlea(izen_lexikografikoak, ezaugarrien_agerpen_atalasea=ezaugarri_atalasea,
-                                          ezaugarri_mota=mota,
-                                          argumentuen_arteko_distantzia=argumentuen_arteko_distantzia)
+        self.erauzlea = EzaugarriErauzlea(izen_lexikografikoak, *args, **kwargs)
 
         # Ezaugarria erauzi datasetetatik
         print("Ezaugarriak erauzten...", end="", flush=True)
@@ -56,7 +64,7 @@ class ErlazioErauzlea:
         if optimizatu:
             print("Hiperparametroak optimizatzen...", end="", flush=True)
             opt = HiperparametroOptimizadorea()
-            self._C, _ = opt.optimizatu(X_train, X_dev, y_train, y_dev, iterazio_kop=optimizazio_iterazio_kop)
+            self._C, _ = opt.optimizatu(X_train, X_dev, y_train, y_dev, *args, **kwargs)
             print("Ondo! C={}.".format(self._C))
         else:
             self._C = 1.0
