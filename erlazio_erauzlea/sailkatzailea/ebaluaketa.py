@@ -166,14 +166,14 @@ class Ebaluaketa:
         return precision["micro"], recall["micro"], average_precision["micro"]
 
 
-    def precision_recall_fscore(self):
+    def precision_recall_fscore(self, average='macro'):
         clf = copy(self._modeloa)
         clf.fit(self._X_train, self._y_train)
         pre = clf.predict(self._X_test)
 
-        precision = precision_score(self._y_test, pre, average='macro')
-        recall = recall_score(self._y_test, pre, average='macro')
-        fscore = f1_score(self._y_test, pre, average='macro')
+        precision = precision_score(self._y_test, pre, average=average)
+        recall = recall_score(self._y_test, pre, average=average)
+        fscore = f1_score(self._y_test, pre, average=average)
         #precision, recall, fscore, _ = precision_recall_fscore_support(self._y_test, pre, average='macro')
 
         return precision, recall, fscore
