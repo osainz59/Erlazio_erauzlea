@@ -51,7 +51,7 @@ def agerpen_gutxiko_tripletak_ezabatu(df, atalasea=10):
     return df[~df[['arg1', 'arg2']].apply(tuple, 1).isin(iragazteko_tripletak)]
 
 
-def agerpen_handiko_tripletak_ezabatu(df, atalasea=75):
+def agerpen_handiko_tripletak_ezabatu(df, atalasea=100):
     iragazteko_tripletak = df.groupby(['arg1', 'arg2']).count().docid
     iragazteko_tripletak = list(iragazteko_tripletak[iragazteko_tripletak > atalasea].keys())
 
