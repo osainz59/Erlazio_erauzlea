@@ -29,7 +29,7 @@ class EzaugarriErauzlea:
         self._atalasea = ezaugarrien_agerpen_atalasea
 
     @staticmethod
-    def __lortu_argumentuen_posizioak(arg1, arg2, lemmas):
+    def lortu_argumentuen_posizioak(arg1, arg2, lemmas):
         """
         Bi argumentuen esaldian duten posizioa itzultzen du.
 
@@ -38,6 +38,9 @@ class EzaugarriErauzlea:
         :param lemmas: Esaldia lemmatizatua.
         :return: Bi argumentuen esaldian duten posizioa itzultzen du.
         """
+
+        if isinstance(lemmas, str):
+            lemmas = lemmas.split()
 
         # Hasieraketak
         arg1_pos, arg2_pos = [], []
@@ -79,7 +82,7 @@ class EzaugarriErauzlea:
             if self._mota == 'mintz':
                 pos = self._pos.loc[docid][0].split()
 
-            distantzia, arg1_pos, arg2_pos = self.__lortu_argumentuen_posizioak(arg1, arg2, lemmas)
+            distantzia, arg1_pos, arg2_pos = self.lortu_argumentuen_posizioak(arg1, arg2, lemmas)
 
             if distantzia > self._arg_dist:
                 return None

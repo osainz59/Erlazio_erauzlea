@@ -2,6 +2,8 @@ import pandas as pd
 import json
 import numpy as np
 
+from erlazio_erauzlea.sailkatzailea.ezaugarriak import EzaugarriErauzlea
+
 
 def kalkulatu_erlazioen_adibide_proportzioa(dataseta):
     return dataseta.groupby('rel').count().docid / len(dataseta)
@@ -48,21 +50,43 @@ def split_dataset(dataset):
     return train_set, dev_set, test_set
 
 
-def __to_dict(argumentua, id2term):
-    return {'word': argumentua, 'id': id2term[argumentua]}
+def __to_dict(row, id2term):
+    try:
+        return {'word': row[0], 'id': int(id2term[row[0]]), 'position': int(row[1])}
+    except:
+        pass
 
 
-def dataset_to_json(dataset, tokens, id2term):
+def __lortu_errenkadaren_argumentuen_posizioak(row):
+    try:
+        posizioak = EzaugarriErauzlea.lortu_argumentuen_posizioak(str(row['arg1']), str(row['arg2']), str(row['lemma']))
+        row['arg1_pos'] = posizioak[1]
+        row['arg2_pos'] = posizioak[2]
+
+        return row
+    except Exception as e:
+        pass
+
+
+def dataset_to_json(dataset, tokens, lemmas, id2term):
+
+    df_len = len(dataset)
 
     new_df = pd.DataFrame()
 
     tokens = tokens.reset_index()
     df = dataset.merge(tokens, left_on='docid', right_on='index')
+    df = df.merge(lemmas, left_on='docid', right_on='index')
 
-    new_df['head'] = df['arg1'].apply(__to_dict, args=(id2term,))
-    new_df['tail'] = df['arg2'].apply(__to_dict, args=(id2term,))
+    df = df.apply(__lortu_errenkadaren_argumentuen_posizioak, axis=1)
+    df.dropna(inplace=True)
+
+    new_df['head'] = df[['arg1', 'arg1_pos']].apply(__to_dict, args=(id2term,), axis=1)
+    new_df['tail'] = df[['arg2', 'arg2_pos']].apply(__to_dict, args=(id2term,), axis=1)
     new_df['sentence'] = df['tokens']
     new_df['relation'] = df['rel']
+
+    print(f"Hasierako datasetaren luzeera: {df_len}, Bukaerako datasetaren luzeera: {len(new_df)}, Diferentzia: {df_len - len(new_df)}")
 
     df_dict = new_df.to_dict(orient='records')
 
