@@ -34,11 +34,14 @@ class HiperparametroOptimizadorea:
         d_ = self._C
         emaitzak = np.array([])
         balioak = np.array([])
+        score = 0.0
         for i in range(iterazio_kop):
             d = 2 / np.power(5, i)
             C_balioak = np.arange(C - d_, C + d_ + d, d)
             C_balioak = C_balioak[C_balioak > 0]
-            C, score, ema = self.__grid_search(X_train, X_dev, y_train, y_dev, C_balioak, verbose)
+            C_, score_, ema = self.__grid_search(X_train, X_dev, y_train, y_dev, C_balioak, verbose)
+            if score_ > score:
+                C, score = C_, score_
             balioak = np.hstack((balioak, C_balioak))
             emaitzak = np.hstack((emaitzak, ema))
             d_ = d

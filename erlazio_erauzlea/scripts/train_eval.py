@@ -6,6 +6,7 @@ import argparse
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 from erlazio_erauzlea.sailkatzailea import Sampling, HiperparametroOptimizadorea, EzaugarriErauzlea
 from erlazio_erauzlea.sailkatzailea import Ebaluaketa
@@ -57,7 +58,7 @@ def train_eval(tokens, lemmas, pos, il, train, dev, mota, atalasea, verbose=Fals
         # Hyperparametroak optimizatu
         print("Sailkatzailearen hyperparametroak optimizatu...", end="", flush=True)
         opt = HiperparametroOptimizadorea()
-        C, _ = opt.optimizatu(X_train, X_dev, y_train, y_dev, iterazio_kop=25)
+        C, _ = opt.optimizatu(X_train, X_dev, y_train, y_dev, iterazio_kop=10)
         print("Okey")
         clf = LinearSVC(C=C)
     else:
@@ -67,8 +68,10 @@ def train_eval(tokens, lemmas, pos, il, train, dev, mota, atalasea, verbose=Fals
     ebaluaketa = Ebaluaketa(clf, X_train, X_dev, y_train, y_dev)
     ebaluaketa.konfusio_matrizea('Konfusio matrize normalizatua')
     plt.savefig('irudiak/konfusio_matrizea-{}-{}-{}.png'.format(mota, sampling, param))
-    ebaluaketa.precision_recall_kurba()
+    precision, recall, _ = ebaluaketa.precision_recall_kurba()
     plt.savefig('irudiak/precision_recall_kurba-{}-{}-{}.png'.format(mota, sampling, param))
+    np.save('kurbak/precision_curve-{}-{}-{}.npy'.format(mota, sampling, param), precision)
+    np.save('kurbak/recall_curve-{}-{}-{}.npy'.format(mota, sampling, param), recall)
     precision, recall, fscore = ebaluaketa.precision_recall_fscore()
     print("Precision: {}, Recall: {}, F-Score: {}".format(precision, recall, fscore))
 
